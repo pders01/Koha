@@ -17,25 +17,23 @@ library.add(faPlus, faMinus, faPencil, faTrash, faSpinner);
 
 import App from "../components/Cities/Main.vue";
 
-import { routes } from "../routes/cities";
+import { routes as routesDef } from "../routes/cities";
+
+import { useMainStore } from "../stores/main";
+import { useNavigationStore } from "../stores/navigation";
+import i18n from "../i18n";
+
+const pinia = createPinia();
+
+const mainStore = useMainStore();
+const navigationStore = useNavigationStore(pinia);
+const routes = navigationStore.setRoutes(routesDef);
 
 const router = createRouter({
     history: createWebHistory(),
     linkActiveClass: "current",
     routes,
 });
-
-import { useMainStore } from "../stores/main";
-
-const pinia = createPinia();
-
-const i18n = {
-    install: app => {
-        app.config.globalProperties.$__ = key => {
-            return window["__"](key);
-        };
-    },
-};
 
 const admin_menu_template = document.getElementById("admin-menu-template");
 const app = createApp(App, {
@@ -49,7 +47,7 @@ const app = createApp(App, {
 
 app.config.unwrapInjectedRef = true;
 
-const mainStore = useMainStore(pinia);
 app.provide("mainStore", mainStore);
+app.provide("navigationStore", navigationStore);
 
 app.mount("#cities");
