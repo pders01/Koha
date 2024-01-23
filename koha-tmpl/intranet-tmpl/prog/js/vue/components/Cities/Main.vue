@@ -1,7 +1,7 @@
 <template>
     <div>
         <div id="sub-header">
-            <Breadcrumb />
+            <Breadcrumbs />
             <Help />
         </div>
         <div class="main container-fluid">
@@ -23,10 +23,10 @@
 
 <script>
 import { inject, ref } from "vue"
-import Breadcrumb from "../../components/Breadcrumb.vue"
-import Help from "../../components/Help.vue"
-import Dialog from "../../components/Dialog.vue"
-import KohaTable from "../../components/KohaTable.vue"
+import Breadcrumbs from "../Breadcrumbs.vue"
+import Help from "../Help.vue"
+import Dialog from "../Dialog.vue"
+import KohaTable from "../KohaTable.vue"
 import { APIClient } from "../../fetch/api-client.js"
 import "vue-select/dist/vue-select.css"
 import { storeToRefs } from "pinia"
@@ -70,7 +70,7 @@ export default {
         },
     },
     components: {
-        Breadcrumb,
+        Breadcrumbs,
         Dialog,
         Help,
         KohaTable,
