@@ -170,6 +170,7 @@
 <div class="main container-fluid">
     <div class="row">
         <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+            [% INCLUDE 'messages.inc' %]
 
     <div id="item-search-block">
       <h1>Item search</h1>
@@ -471,57 +472,53 @@
             });
 
             $('#results').dataTable($.extend(true, {}, dataTablesDefaults, {
-                'bDestroy': true,
-                'bServerSide': true,
-                'bProcessing': true,
-                'sAjaxSource': '/cgi-bin/koha/catalogue/itemsearch.pl',
-                'fnServerData': function(sSource, aoData, fnCallback) {
-                    aoData.push( { 'name': 'format', 'value': 'json' } );
-                    for (i in params) {
-                        aoData.push(params[i]);
-                    }
-                    $.ajax({
-                        'dataType': 'json',
-                        'type': 'POST',
-                        'url': sSource,
-                        'data': aoData,
-                        'success': function(json){
-                            fnCallback(json);
+                "destroy": true,
+                "serverSide": true,
+                "processing": true,
+                "ajax": {
+                    url: '/cgi-bin/koha/catalogue/itemsearch.pl',
+                    type: 'POST',
+                    data: function ( d ) {
+                        for (i in params) {
+                            d[params[i].name] = params[i].value;
                         }
-                    });
+                        d.format = 'json';
+                        d.columns = JSON.stringify( d.columns );
+                        return d;
+                    }
                 },
-                'sDom': '<"top pager"ilp>t<"bottom pager"ip>r',
-                'aaSorting': [[1, 'asc']],
-                'aoColumns': [
-                    { 'sName': 'checkbox', 'bSortable': false },
-                    { 'sName': 'title' },
-                    { 'sName': 'publicationyear' },
-                    { 'sName': 'publishercode' },
-                    { 'sName': 'ccode' },
-                    { 'sName': 'barcode' },
-                    { 'sName': 'enumchron' },
-                    { 'sName': 'itemcallnumber' },
-                    { 'sName': 'homebranch' },
-                    { 'sName': 'holdingbranch' },
-                    { 'sName': 'location' },
-                    { 'sName': 'itype'},
-                    { 'sName': 'stocknumber' },
-                    { 'sName': 'notforloan' },
-                    { 'sName': 'itemlost' },
-                    { 'sName': 'withdrawn' },
-                    { 'sName': 'damaged' },
-                    { 'sName': 'issues' },
-                    { 'sName': 'date_due' },
-                    { 'sName': 'actions', 'bSortable': false }
+                'dom': '<"top pager"ilp>t<"bottom pager"ip>r',
+                'order': [[1, 'asc']],
+                'columns': [
+                    { 'name': 'checkbox', 'orderable': false },
+                    { 'name': 'title' },
+                    { 'name': 'publicationyear' },
+                    { 'name': 'publishercode' },
+                    { 'name': 'ccode' },
+                    { 'name': 'barcode' },
+                    { 'name': 'enumchron' },
+                    { 'name': 'itemcallnumber' },
+                    { 'name': 'homebranch' },
+                    { 'name': 'holdingbranch' },
+                    { 'name': 'location' },
+                    { 'name': 'itype'},
+                    { 'name': 'stocknumber' },
+                    { 'name': 'notforloan' },
+                    { 'name': 'itemlost' },
+                    { 'name': 'withdrawn' },
+                    { 'name': 'damaged' },
+                    { 'name': 'issues' },
+                    { 'name': 'date_due' },
+                    { 'name': 'actions', 'orderable': false }
                 ],
-                "sPaginationType": "full_numbers",
+                "pagingType": "full_numbers",
                 "drawCallback": function( settings ) {
                     prepSelections();
                 },
                 fixedHeader: false // There is a bug on this view
             })).columnFilter({
                 'sPlaceHolder': 'head:after',
-                'aoColumns': [
+                "columns": [
                     null,
                     { 'type': 'text' },
                     { 'type': 'text' },

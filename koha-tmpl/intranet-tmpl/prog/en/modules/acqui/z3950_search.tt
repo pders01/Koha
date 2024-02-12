@@ -80,6 +80,7 @@ tr.selected td {
 [% END #/ WRAPPER sub-header.inc %]
 
 <div class="main container-fluid">
+    [% INCLUDE 'messages.inc' %]
       [% IF ( opsearch ) %]
     <form method="post" action="z3950_search.pl" name="f" class="checkboxed">
     <div class="row">
@@ -306,14 +307,14 @@ tr.selected td {
     <script>
         $(document).ready(function(){
             var resultst = $("#resultst").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [ -1, -2 ], "bSortable": false, "bSearchable": false },
-                    { "aTargets": [ 1 ], "sType": "nsb-nse" },
+                "columnDefs": [
+                    { "targets": [ -1, -2 ], "orderable": false, "searchable":  false },
+                    { "targets": [ 1 ], "type": "nsb-nse" },
                 ],
-                "aaSorting": [[ 1, "asc" ]],
-                "bPaginate": false,
+                "order": [[ 1, "asc" ]],
+                "paginate": false,
                 "searching": false,
-                "bInfo":false
+                "info": false
             }));
             InitLastAction();
         });

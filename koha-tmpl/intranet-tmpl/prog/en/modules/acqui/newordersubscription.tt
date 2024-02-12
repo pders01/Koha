@@ -40,6 +40,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
             <h1>Serials subscriptions</h1>
             <div class="page-section">
@@ -134,11 +135,11 @@
 
         $(document).ready(function() {
             $("#srlt").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "bSortable": false, "bSearchable": false, 'aTargets': [ 'NoSort' ] },
-                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] }
+                "columnDefs": [
+                    { "orderable": false, "searchable":  false, "targets": [ 'NoSort' ] },
+                    { "type": "anti-the", "targets":  [ "anti-the" ] }
                 ],
-                "sPaginationType": "full"
+                "pagingType": "full"
             }));
 
             $("#show_only_renewed").click(function(){

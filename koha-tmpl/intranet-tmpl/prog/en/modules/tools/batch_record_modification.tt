@@ -51,6 +51,7 @@
         <div class="row">
             <div class="col-sm-10 col-sm-push-2">
                 <main>
+                    [% INCLUDE 'messages.inc' %]
 
                     <h1>Batch record modification</h1>
 
@@ -334,23 +335,23 @@
             $("#selectall").click();
 
             $("table#biblios").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [0, 3], "bSortable": false, "bSearchable": false },
-                    { "aTargets": [1], "sType": "num-html" }
+                "columnDefs": [
+                    { "targets": [0, 3], "orderable": false, "searchable":  false },
+                    { "targets": [1], "type": "num-html" }
                 ],
-                "sDom": 't',
-                "aaSorting": [],
-                "bPaginate": false
+                "dom": 't',
+                "order": [],
+                "paginate": false
             }));
 
             $("table#authorities").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [0, 3], "bSortable": false, "bSearchable": false },
-                    { "aTargets": [1], "sType": "num-html" }
+                "columnDefs": [
+                    { "targets": [0, 3], "orderable": false, "searchable":  false },
+                    { "targets": [1], "type": "num-html" }
                 ],
-                "sDom": 't',
-                "aaSorting": [],
-                "bPaginate": false
+                "dom": 't',
+                "order": [],
+                "paginate": false
             }));
 
             $("#mainformsubmit").click(function() {

@@ -56,6 +56,7 @@
     [% END #/ WRAPPER sub-header.inc %]
 
     <div class="main container-fluid">
+        [% INCLUDE 'messages.inc' %]
 
         <h1>Batch item modification</h1>
         [% IF op == 'enqueued' %]

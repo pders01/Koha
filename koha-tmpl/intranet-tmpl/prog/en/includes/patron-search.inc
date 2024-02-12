@@ -111,7 +111,7 @@
 
     [% IF filter == 'suggestions_managers' %]
         <div class="hint">Only staff with superlibrarian or suggestions_manage permissions are returned in the search results</div>
-    [% ELSIF filter == 'orders_managers' %]
+    [% ELSIF filter == 'orders_managers' OR filter == 'baskets_managers' %]
         <div class="hint">Only staff with superlibrarian or acquisitions permissions (or order_manage permission if granular permissions are enabled) are returned in the search results</div>
     [% ELSIF filter == 'funds_owners' OR filter == 'funds_users' %]
         <div class="hint">Only staff with superlibrarian or acquisitions permissions (or budget_modify permission if granular permissions are enabled) are returned in the search results</div>
@@ -398,7 +398,7 @@
                     [% END %]
                 },
                 [% END %]
-                "iDeferLoading": defer_loading,
+                "deferLoading": defer_loading,
                 "columns": [
                     [% FOR column IN columns %]
                         [% IF default_sort_column == column %]
@@ -624,9 +624,9 @@
                 ],
                 'embed': [% To.json(embed) | $raw %],
                 "order": [[ [% order_column_index | html %], "asc" ]],
-                'bAutoWidth': false,
+                "autoWidth": false,
                 'lengthMenu': [aLengthMenu, aLengthMenuLabel],
-                'sPaginationType': 'full_numbers',
+                "pagingType": 'full_numbers',
                 "pageLength": [% Koha.Preference('PatronsPerPage') | html %],
                 [% IF sticky_header %]
                 "initComplete": function(settings, json) {
@@ -650,7 +650,7 @@
                 e.preventDefault();
                 var borrowernumber = $(this).data("borrowernumber");
                 var borrower_data = JSON.parse($("#borrower_data"+borrowernumber).val());
-                add_user( borrowernumber, borrower_data.firstname + " " + borrower_data.surname );
+                add_user( borrowernumber, $patron_to_html( borrower_data, { display_cardnumber: false, url: false } ) );
             });
 
             $("body").on("click",".select_user",function(e){
@@ -780,7 +780,7 @@
                     table_dt.column([% loop.count - 1 %]).search(library_id ? '^'+library_id+'$' : '');
                 [% CASE 'category' %]
                     let category_id = $("#categorycode_filter").val() || "";
-                    patrons_table.find('thead tr:eq(1) th[data-filter="categories"] select').val(category_id);
+                    patrons_table.find('thead tr:eq(1) th[data-filter="categories"] select').val(category_id.toLowerCase());
                     table_dt.column([% loop.count - 1 %]).search(category_id ? '^'+category_id+'$' : '');
                 [% END %]
             [% END %]

@@ -53,6 +53,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
                 <h1 class="parameters">
                     [% IF humanbranch %]
                         Defining circulation and fine rules for "[% Branches.GetName( humanbranch ) | html %]"
@@ -243,7 +244,7 @@
                                                 </td>
                                                 <td>
                                                     [% IF note.defined && note != '' %]
-                                                        <a name="viewnote" data-toggle="popover" title="Note" data-content="[% note | html %]" data-placement="top" data-trigger="hover">View note</a>
+                                                        <a id="viewnote" data-toggle="popover" title="Note" data-content="[% note | html %]" data-placement="top" data-trigger="hover">View note</a>
                                                     [% ELSE %]<span>&nbsp;</span>[% END %]
                                                 </td>
                                                 <td>
@@ -1425,13 +1426,13 @@
     <script>
          $(document).ready(function() {
             KohaTable("default-circulation-rules", {
-                "aoColumnDefs": [
-                    { "bVisible": false, "aTargets": [ 0,2 ] },
-                    { "bSortable": false, "aTargets": ["_all"] }
+                "columnDefs": [
+                    { "visible": false, "targets": [ 0,2 ] },
+                    { "orderable": false, "targets": ["_all"] }
                 ],
-                "aaSortingFixed": [ [0,'asc'], [1,'asc'], [2,'asc'], [3,'asc'] ],
-                "bPaginate": false,
-                "bAutoWidth": false
+                "orderFixed": [ [0,'asc'], [1,'asc'], [2,'asc'], [3,'asc'] ],
+                "paginate": false,
+                "autoWidth": false
             });
         });
 
@@ -1497,7 +1498,7 @@
                     var current_column = $("#edit_row td:eq("+i+")");
                     if ( i == 3 ) {
                         // specific processing for the Note column
-                        var note = $(this).find("a[name='viewnote']").data("content");
+                        var note = $(this).find("a[id='viewnote']").data("content");
                         $(current_column).find("input[type='text']").val(note);
                     } else if ( i == 9 ) {
                         // specific processing for Hard due date

@@ -168,6 +168,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
                 [% INCLUDE "reports-toolbar.inc" %]
 
@@ -826,7 +827,7 @@
                             <input type='hidden' name='cache_expiry_units' value='[% cache_expiry_units | html %]' />
                             <input type='hidden' name='public' value='[% public | html %]' />
                         [% IF ( phase_update) %]
-                            <input type='hidden' name='phase' value='Update SQL' />
+                            <input type='hidden' name='phase' value='update_sql' />
                             <button type="submit" name="save_anyway" value="Save anyway" class="approve"><i class="fa fa-fw fa-check"></i> Save anyway</button>
                         [% ELSIF ( phase_save) %]
                             <input type='hidden' name='area' value='[% area | html %]' />
@@ -1947,9 +1948,9 @@
             [% IF (saved1) %]
                 var table_settings = [% TablesSettings.GetTableSettings( 'reports', 'saved-sql', 'table_reports', 'json' ) | $raw %];
                 var rtable = KohaTable("table_reports", {
-                    'bAutoWidth': false,
-                    'sPaginationType': 'full',
-                    'aaSorting': [[ 1, "asc" ]],
+                    "autoWidth": false,
+                    "pagingType": 'full',
+                    "order": [[ 1, "asc" ]],
                     "language": {
                         "zeroRecords": _("No matching reports found")
                     },
@@ -2346,14 +2347,14 @@
                         $("#mana_search_result_label").text(_("Results from Mana Knowledge Base"));
                         $("#mana-loading").hide();
                         $("#mana_results_datatable").dataTable($.extend(true, {}, dataTablesDefaults,{
-                            "sPaginationType":"full",
+                            "pagingType": "full",
                             "autoWidth": false,
                             "columnDefs": [
                                 { "width": "35%", "targets": 1 }
                             ],
-                            "aoColumnDefs": [
-                                { 'bSortable': false, "bSearchable": false, 'aTargets': [ 'NoSort' ] },
-                                { 'sType': "anti-the", 'aTargets' : [ 'anti-the'] }
+                            "columnDefs": [
+                                { "orderable": false, "searchable":  false, "targets": [ 'NoSort' ] },
+                                { "type": "anti-the", "targets":  [ 'anti-the'] }
                             ]
                         }));
 

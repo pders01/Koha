@@ -39,6 +39,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
                 [% IF !club %]
                 <div class="dialog message">The club you requested does not exist.</div>
                 [% ELSE %]
@@ -107,10 +108,10 @@
     <script>
         $(document).ready(function() {
             eTable = $('#enrollments-table').dataTable($.extend(true, {}, dataTablesDefaults, {
-                "sPaginationType": "full",
-                "sDom": 'C<"top pager"ilpf><"#filter_c">tr<"bottom pager"ip>',
-                "aoColumnDefs": [
-                        { "aTargets": [ -1, -2 ], "bSortable": false, "bSearchable": false },
+                "pagingType": "full",
+                "dom": 'C<"top pager"ilpf><"#filter_c">tr<"bottom pager"ip>',
+                "columnDefs": [
+                        { "targets": [ -1, -2 ], "orderable": false, "searchable":  false },
                 ]
             } ));
         });

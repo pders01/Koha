@@ -37,6 +37,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
         [% FOR m IN messages %]
             <div class="dialog [% m.type | html %]">
@@ -326,7 +327,7 @@
         $(document).ready(function() {
           var table_settings = [% TablesSettings.GetTableSettings('circ', 'holds', 'holds-to-pull', 'json') | $raw %];
           var holdst = KohaTable("holdst", {
-            "sPaginationType": "full_numbers"
+            "pagingType": "full_numbers"
           }, table_settings);
           holdst.fnAddFilters("filter");
           [%# add separateData function to cleanse jQuery select lists by breaking apart strings glued with BR tags and then de-duplicating any repeated library codes %]

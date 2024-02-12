@@ -77,6 +77,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 [% FOREACH m IN messages %]
     <div class="dialog [% m.type | html %]">
@@ -289,7 +290,7 @@
                     <div class="hint">Set to 'yes' to show this library as a search option and on the libraries page in the OPAC.</div>
                 </li>
                 <li>
-                    <label for="UserJS">UserJS: </label>
+                    <label for="opacuserjs">Specific OPAC JS: </label>
                     <div style="display:flex; flex-direction:column;">
                         <a class="expand-textarea" id="expand_opacuserjs" data-target="opacuserjs" data-syntax="javascript" href="#">Edit</a>
                         <textarea style="display:none" name="opacuserjs" id="opacuserjs" class="codemirror" rows="10" cols="40">[% library.opacuserjs | html %]</textarea>
@@ -297,7 +298,7 @@
                     </div>
                 </li>
                 <li>
-                    <label for="UserCSS">UserCSS: </label>
+                    <label for="opacusercss">Specific OPAC CSS: </label>
                     <div style="display:flex; flex-direction:column;">
                         <a class="expand-textarea" id="expand_opacusercss" data-target="opacusercss" data-syntax="css" href="#">Edit</a>
                         <textarea style="display:none" name="opacusercss" id="opacusercss" class="" rows="10" cols="40">[% library.opacusercss | html %]</textarea>

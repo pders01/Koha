@@ -43,6 +43,7 @@
                     [% ELSE %]
                         <div class="col-sm-12">
                     [% END %]
+                    [% INCLUDE 'messages.inc' %]
 
                         <h1>Holds awaiting pickup for your library on: [% show_date | $KohaDates %]</h1>
                         <h2>
@@ -110,7 +111,7 @@
                                     [% WRAPPER tab_panel tabname="holdswaiting" bt_active= 1 %]
                                         [% IF ( reserveloop ) %]
                                             <div id="toolbar" class="btn-toolbar">
-                                                <button class="btn btn-default cancel_selected_holds" data-bulk="true"></button>
+                                                <button class="btn cancel_selected_holds" data-bulk="true"></button>
                                             </div>
                                             [% INCLUDE waiting_holds.inc table_name='holdst' reserveloop=reserveloop tab='holdwaiting' %]
                                         [% ELSE %]
@@ -120,22 +121,24 @@
 
                                     [% WRAPPER tab_panel tabname="holdsover" %]
                                         [% IF ( overloop ) %]
-                                            <span id="holdsover-cancel-all">
-                                                <button class="cancel_selected_holds" data-bulk="true"></button>
-                                                <form name="cancelAllReserve" action="waitingreserves.pl" method="post">
-                                                    <input type="hidden" name="cancelall" value="1" />
-                                                    <input type="hidden" name="allbranches" value="[% allbranches | html %]" />
-                                                    <input type="hidden" name="tab" value="holdsover">
-                                                    [% IF TransferWhenCancelAllWaitingHolds %]
-                                                        <input type="submit" class="btn btn-primary" value="Cancel and transfer all" />
-                                                    [% ELSE %]
-                                                        <input type="submit" class="btn btn-primary" value="Cancel all" />
-                                                    [% END %]
-                                                </form>
-                                                [% UNLESS TransferWhenCancelAllWaitingHolds %]
-                                                    Only items that need not be transferred will be cancelled (TransferWhenCancelAllWaitingHolds syspref)
-                                                [% END %]
-                                            </span>
+                                            <div id="toolbar" class="btn-toolbar">
+                                                <button class="btn cancel_selected_holds" data-bulk="true"></button>
+                                                <div class="btn-group">
+                                                    <form name="cancelAllReserve" action="waitingreserves.pl" method="post">
+                                                        <input type="hidden" name="cancelall" value="1" />
+                                                        <input type="hidden" name="allbranches" value="[% allbranches | html %]" />
+                                                        <input type="hidden" name="tab" value="holdsover">
+                                                        [% IF TransferWhenCancelAllWaitingHolds %]
+                                                            <input type="submit" class="btn btn-primary" value="Cancel and transfer all" />
+                                                        [% ELSE %]
+                                                            <input type="submit" class="btn btn-primary" value="Cancel all" />
+                                                        [% END %]
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            [% UNLESS TransferWhenCancelAllWaitingHolds %]
+                                                <div class="hint">Only items that need not be transferred will be cancelled (TransferWhenCancelAllWaitingHolds syspref)</div>
+                                            [% END %]
                                             [% INCLUDE waiting_holds.inc table_name='holdso' reserveloop=overloop tab='holdsover' %]
                                         [% ELSE %]
                                             <div class="dialog message">No holds found.</div>
@@ -144,6 +147,9 @@
 
                                     [% WRAPPER tab_panel tabname="holdscancelled" %]
                                         [% IF cancel_reqs_count %]
+                                            <div id="toolbar" class="btn-toolbar">
+                                                <button class="btn cancel_selected_holds" data-bulk="true"></button>
+                                            </div>
                                             [% INCLUDE waiting_holds.inc select_column='1' table_name='holdscr' reserveloop=cancel_reqs tab='holdscr' %]
                                         [% ELSE %]
                                             <div class="dialog message">No holds found.</div>
@@ -213,17 +219,17 @@
         $(document).ready(function() {
 
             KohaTable("holdst", {
-                "sPaginationType": "full",
+                "pagingType": "full",
                 "order": [[1, 'asc']]
             }, holdst_table_settings);
 
             KohaTable("holdso", {
-                "sPaginationType": "full",
+                "pagingType": "full",
                 "order": [[1, 'asc']]
             }, holdso_table_settings);
 
             KohaTable("holdscr", {
-                "sPaginationType": "full",
+                "pagingType": "full",
                 "order": [[1, 'asc']]
             }, holdscr_table_settings);
 

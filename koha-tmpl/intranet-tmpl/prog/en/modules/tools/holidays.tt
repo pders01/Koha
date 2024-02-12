@@ -33,6 +33,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
                 <h1>[% tx("{library} calendar", { library = Branches.GetName( branch ) }) | html %]</h1>
 
@@ -586,12 +587,12 @@
                 first_td.html(weekdays[first_td.html()]);
             });
             $("#holidayweeklyrepeatable").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "sDom": 't',
-                "bPaginate": false
+                "dom": 't',
+                "paginate": false
             }));
             var tables = $("#holidayexceptions, #holidaysyearlyrepeatable, #holidaysunique").DataTable($.extend(true, {}, dataTablesDefaults, {
-                "sDom": 't',
-                "bPaginate": false,
+                "dom": 't',
+                "paginate": false,
                 "createdRow": function( row, data, dataIndex ) {
                     var holiday = $(row).data("date");
                     if( holiday < datestring ){

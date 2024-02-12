@@ -49,9 +49,9 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 <h1>Duplicate existing orders</h1>
-[% INCLUDE 'blocking_errors.inc' %]
 
 [% IF op == 'search' || op == 'select' %]
 <form action="/cgi-bin/koha/acqui/duplicate_orders.pl" method="post">
@@ -264,31 +264,33 @@
 
 [% ELSIF op == 'duplication_done' %]
     [% IF new_orders %]
-        <table id="table_neworders">
-            <thead>
-                <tr>
-                    <th>Order line</th>
-                    <th>Status</th>
-                    <th>Basket</th>
-                    <th>Basket creator</th>
-                    <th>Basket group</th>
-                    <th>Invoice number</th>
-                    <th class="anti-the">Summary</th>
-                    <th>Vendor</th>
-                    <th>Placed on</th>
-                    <th>Received on</th>
-                    <th>Quantity received</th>
-                    <th>Quantity ordered</th>
-                    <th>Unit cost</th>
-                    <th>Fund</th>
-                </tr>
-            </thead>
-            <tbody>
-            [% FOREACH order IN new_orders %]
-                [% INCLUDE display_order_line %]
-            [% END %]
-            </tbody>
-        </table>
+        <div class="page-section">
+            <table id="table_neworders">
+                <thead>
+                    <tr>
+                        <th>Order line</th>
+                        <th>Status</th>
+                        <th>Basket</th>
+                        <th>Basket creator</th>
+                        <th>Basket group</th>
+                        <th>Invoice number</th>
+                        <th class="anti-the">Summary</th>
+                        <th>Vendor</th>
+                        <th>Placed on</th>
+                        <th>Received on</th>
+                        <th>Quantity received</th>
+                        <th>Quantity ordered</th>
+                        <th>Unit cost</th>
+                        <th>Fund</th>
+                    </tr>
+                </thead>
+                <tbody>
+                [% FOREACH order IN new_orders %]
+                    [% INCLUDE display_order_line %]
+                [% END %]
+                </tbody>
+            </table>
+        </div>
         <a class="btn btn-default" href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basket.basketno | html %]"><i class="fa fa-fw fa-arrow-left"></i> Return to the basket</a
     [% ELSE %]
         <span>No order has been duplicated. Maybe something wrong happened?</span>
@@ -327,7 +329,7 @@
         $(document).ready(function() {
             $('span.hint').hide();
             KohaTable("table_orders", {
-                "bPaginate": false
+                "paginate": false
             });
 
             [% IF op == 'search' OR op == 'select' %]

@@ -55,6 +55,7 @@
 [% END #/ WRAPPER sub-header.inc %]
 
 <div class="main container-fluid">
+    [% INCLUDE 'messages.inc' %]
 
     <h1>Batch item deletion</h1>
 

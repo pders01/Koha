@@ -21,6 +21,8 @@ use Modern::Perl;
 
 use CGI qw ( -utf8 );
 use URI::Escape qw( uri_escape_utf8 );
+use Array::Utils qw(intersect);
+
 use C4::Auth qw( get_template_and_user );
 
 use C4::Context;
@@ -47,13 +49,18 @@ my ( $template, $loggedinuser, $cookie );
 my $authority_types = Koha::Authority::Types->search({}, { order_by => ['authtypetext']});
 
 if ( $op eq "do_search" ) {
-    my @marclist = $query->multi_param('marclist');
+    my @input_marclist = $query->multi_param('marclist');
     my @and_or = $query->multi_param('and_or');
     my @excluding = $query->multi_param('excluding');
     my @operator = $query->multi_param('operator');
     my $orderby = $query->param('orderby');
     my @value = $query->multi_param('value');
     $value[0] ||= q||;
+
+    # validation of "Where"
+    my @valid_marc_list = qw( all match mainentry );
+    my @marclist        = intersect( @input_marclist, @valid_marc_list );
+    @marclist = ('all') unless @marclist;
 
     my $builder = Koha::SearchEngine::QueryBuilder->new(
         { index => $Koha::SearchEngine::AUTHORITIES_INDEX } );

@@ -46,6 +46,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 
 <h1>Lost items</h1>
@@ -216,12 +217,12 @@
             [% END %]
 
             var lostitems_table = KohaTable("lostitems-table", {
-                "aaSorting": [],
-                "aoColumnDefs": [
-                    { "bSortable": false, "bSearchable": false, 'aTargets': [ 'NoSort' ] }
+                "order": [],
+                "columnDefs": [
+                    { "orderable": false, "searchable":  false, "targets": [ 'NoSort' ] }
                 ],
-                'bAutoWidth': false,
-                "bPaginate": false,
+                "autoWidth": false,
+                "paginate": false,
             }, table_settings, 'with_filters');
 
             function itemSelectionBuildExportLink() {

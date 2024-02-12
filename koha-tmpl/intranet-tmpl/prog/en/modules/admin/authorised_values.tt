@@ -108,6 +108,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
                 [% IF op == 'add_form' %]
                     <h1>
@@ -365,8 +366,8 @@
         $(document).ready(function() {
 
             KohaTable("categoriest", {
-                "aaSorting": [[ 0, "asc" ]],
-                "sPaginationType": "full"
+                "order": [[ 0, "asc" ]],
+                "pagingType": "full"
             });
 
             if ( $("#branches option:selected").length < 1 ) {

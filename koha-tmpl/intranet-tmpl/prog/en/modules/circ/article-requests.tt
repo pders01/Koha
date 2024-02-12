@@ -152,6 +152,7 @@
     <div class="main container-fluid starthidden">
         <div class="row">
 
+                [% INCLUDE 'messages.inc' %]
             [% IF Koha.Preference('CircSidebar') %]
             <div class="col-sm-10 col-sm-push-2">
             [% ELSE %]
@@ -581,19 +582,19 @@
             });
 
             requested_datatable = $("#article-requests-requested-table").DataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [0, -1], "bSortable": false, "bSearchable": false },
+                "columnDefs": [
+                    { "targets": [0, -1], "orderable": false, "searchable":  false },
                 ],
             }));
 
             pending_datatable = $("#article-requests-pending-table").DataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [0, -1], "bSortable": false, "bSearchable": false },
+                "columnDefs": [
+                    { "targets": [0, -1], "orderable": false, "searchable":  false },
                 ],
             }));
             processing_datatable = $("#article-requests-processing-table").DataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [0, -1], "bSortable": false, "bSearchable": false },
+                "columnDefs": [
+                    { "targets": [0, -1], "orderable": false, "searchable":  false },
                 ],
             }));
             active_datatable = requested_datatable;

@@ -34,6 +34,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 <h1>Spent - Fund: [% fund_code | html %]</h1>
 
@@ -157,10 +158,10 @@
     <script>
         $(document).ready(function() {
             $("#spent").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] }
+                "columnDefs": [
+                    { "type": "anti-the", "targets":  [ "anti-the" ] }
                 ],
-                "sPaginationType": "full"
+                "pagingType": "full"
             } ) );
         });
     </script>

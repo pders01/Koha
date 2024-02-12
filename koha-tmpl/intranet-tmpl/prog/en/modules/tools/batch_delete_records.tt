@@ -53,6 +53,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
   <h1>Batch record deletion</h1>
   [% FOREACH message IN messages %]
@@ -331,23 +332,23 @@
           [% END %]
 
           $("table#biblios").dataTable($.extend(true, {}, dataTablesDefaults, {
-            "aoColumnDefs": [
-              { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false },
-              { "aTargets": [ 3, 4 ], "sType": "num-html" }
+            "columnDefs": [
+              { "targets": [ 0 ], "orderable": false, "searchable":  false },
+              { "targets": [ 3, 4 ], "type": "num-html" }
             ],
-            "sDom": 't',
-            "aaSorting": [],
-            "bPaginate": false
+            "dom": 't',
+            "order": [],
+            "paginate": false
           }));
 
           $("table#authorities").dataTable($.extend(true, {}, dataTablesDefaults, {
-            "aoColumnDefs": [
-              { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false },
-              { "aTargets": [ 3 ], "sType": "num-html" }
+            "columnDefs": [
+              { "targets": [ 0 ], "orderable": false, "searchable":  false },
+              { "targets": [ 3 ], "type": "num-html" }
             ],
-            "sDom": 't',
-            "aaSorting": [],
-            "bPaginate": false
+            "dom": 't',
+            "order": [],
+            "paginate": false
           }));
 
           $("#selectrecords").on("submit",function(){

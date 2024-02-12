@@ -15,16 +15,10 @@ function activate_filters(id, bShowFilters) {
         if (table.find('thead tr.columnFilter').length == 0) {
             table.dataTable().columnFilter({
                 'sPlaceHolder': 'head:after'
-                ,   'aoColumns': aoColumns
+                ,   "columns": aoColumns
                 ,'bFiltersAlreadyActivated': false
             });
             filters_row.addClass('columnFilter');
-        } else {
-            table.dataTable().columnFilter({
-                'sPlaceHolder': 'head:after'
-                ,   'aoColumns': aoColumns
-                ,'bFiltersAlreadyActivated': true
-            });
         }
 
         if (bShowFilters) {

@@ -393,6 +393,7 @@
           $ref: "../swagger.yaml#/definitions/error"
     x-koha-authorization:
       permissions:
+        - borrowers: "list_borrowers"
         - borrowers: "edit_borrowers"
         - tools: "label_creator"
         - serials: "routing"
@@ -482,6 +483,7 @@
         items:
           type: string
           enum:
+            - +strings
             - extended_attributes
         collectionFormat: csv
     produces:
@@ -516,7 +518,8 @@
           $ref: "../swagger.yaml#/definitions/error"
     x-koha-authorization:
       permissions:
-        borrowers: edit_borrowers
+        - borrowers: "list_borrowers"
+        - borrowers: "edit_borrowers"
   put:
     x-mojo-to: Patrons#update
     operationId: updatePatron

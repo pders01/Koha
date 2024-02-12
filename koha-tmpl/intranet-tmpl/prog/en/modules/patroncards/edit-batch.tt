@@ -49,6 +49,7 @@
         <div class="row">
             <div class="col-sm-10 col-sm-push-2">
                 <main>
+                    [% INCLUDE 'messages.inc' %]
 
                     [% INCLUDE 'patroncards-toolbar.inc' %]
 
@@ -280,12 +281,12 @@
                 $("#description").hide();
             [% END %]
             $("#batcht").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [ -2, -1 ], "bSortable": false, "bSearchable": false }
+                "columnDefs": [
+                    { "targets": [ -2, -1 ], "orderable": false, "searchable":  false }
                 ],
-                "aaSorting": [[ 0, "asc" ]],
-                "sPaginationType": "full",
-                "aLengthMenu": [aLengthMenu, aLengthMenuLabel],
+                "order": [[ 0, "asc" ]],
+                "pagingType": "full",
+                "lengthMenu": [aLengthMenu, aLengthMenuLabel],
                 "pageLength": patronsPerPage,
                 "autoWidth": false
             }));

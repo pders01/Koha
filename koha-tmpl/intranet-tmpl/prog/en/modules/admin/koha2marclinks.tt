@@ -31,6 +31,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 <h1>Koha to MARC mapping</h1>
 
@@ -111,8 +112,8 @@
         }
         $(document).ready(function() {
             $("#kohafields").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                "columnDefs": [
+                    { "targets": [ -1 ], "orderable": false, "searchable":  false },
                 ],
                 "paging":   false
             } ));

@@ -629,13 +629,23 @@ describe("Trains", () => {
             { item_id: 1 },
             { item_id: 2 },
         ]);
+
         cy.get("#waiting-list").contains("Add to waiting list").click();
-        cy.get("#barcode_list").type("bc_1\nbc_2\nbc_3");
+        cy.get("#barcode_list").type("bc_1\nbc_2");
         cy.contains("Submit").click();
         cy.wait("@get-items");
         cy.get("main div[class='dialog message']").contains(
             "2 new items added."
         );
+
+        cy.get("#waiting-list").contains("Add to waiting list").click();
+        cy.get("#barcode_list").type("bc_1\nbc_2\nbc_3");
+        cy.contains("Submit").click();
+        cy.wait("@get-items");
+        cy.get("main div[class='dialog alert modal']").contains(
+            "2 new items added. 1 items not found."
+        );
+        cy.get("#close_modal").click();
         cy.contains("Add last 2 items to a train").click();
         cy.get("#train_id .vs__search").type(train.name + "{enter}");
         cy.intercept("GET", "/api/v1/items*", {

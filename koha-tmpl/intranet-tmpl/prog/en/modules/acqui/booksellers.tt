@@ -38,6 +38,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 [% INCLUDE 'acquisitions-toolbar.inc' %]
 [% UNLESS ( count == 1 ) %]
@@ -79,14 +80,13 @@
                 [% ELSE %]
                     <h2 class="suppliername inactive">
                 [% END %]
-                        <a name="[% supplier.booksellerid | html %]" href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% supplier.booksellerid | uri %]">
+                        <a id="vendor[% supplier.booksellerid | html %]" href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% supplier.booksellerid | uri %]">
                             [% IF (supplier.name) %]
                                 [% supplier.name | html %]
                             [% ELSE %]
                                 NO NAME
                             [% END %]
                         </a>
-                        <a name="[% supplier.booksellerid | html %]" href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% supplier.booksellerid | uri %]"></a>
                         [% IF (supplier.vendor_type) %]([% AuthorisedValues.GetByCode( 'VENDOR_TYPE', supplier.vendor_type ) | html %])[% END %]
                     [% IF ( !supplier.active ) %]<span class="vendor_inactive">(inactive)</span>[% END %]
                 </h2>
@@ -257,18 +257,18 @@
     <script>
         $(document).ready(function() {
             $("table.baskets").dataTable($.extend(true, {}, dataTablesDefaults, {
-                'sDom': 't',
-                'bPaginate': false,
-                'bFilter': false,
-                'bInfo': false,
-                "aaSorting": [[ 1, "asc" ]],
-                "aoColumnDefs": [
-                    { 'aTargets': [-1], 'bSortable': false }
+                "dom": 't',
+                "paginate": false,
+                "searching": false,
+                "info": false,
+                "order": [[ 1, "asc" ]],
+                "columnDefs": [
+                    { "targets": [-1], "orderable": false }
                 ]
             }));
             $("#supplierlist").change(function() {
                 var id = $(this).find("option:selected").val();
-                window.location.href = "#" + id;
+                window.location.href = "#vendor" + id;
             });
             $(".modal").on("shown.bs.modal", function(){
                 var basket = $(this).data("basketno");

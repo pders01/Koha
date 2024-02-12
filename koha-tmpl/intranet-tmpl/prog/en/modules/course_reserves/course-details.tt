@@ -50,6 +50,7 @@
     <div class="main container-fluid">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
+                [% INCLUDE 'messages.inc' %]
 
             <h1>Reserves</h1>
 
@@ -318,8 +319,8 @@
         var table_settings = [% TablesSettings.GetTableSettings( 'coursereserves', 'reserves', 'course_reserves_table', 'json' ) | $raw %];
         $(document).ready(function(){
             var rtable = KohaTable("course_reserves_table", {
-                "sPaginationType": "full",
-                "bAutoWidth": false,
+                "pagingType": "full",
+                "autoWidth": false,
             }, table_settings );
 
             $(".delete_item").click(function(){

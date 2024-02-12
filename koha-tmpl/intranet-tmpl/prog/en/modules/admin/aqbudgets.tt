@@ -114,6 +114,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 [% UNLESS op == 'delete_confirm' %][% INCLUDE 'budgets-admin-toolbar.inc' %][% END %]
 
@@ -537,6 +538,7 @@
 [% MACRO jsinclude BLOCK %]
     [% Asset.js("js/acq.js") | $raw %]
     [% IF op == 'add_form' %]
+        [% INCLUDE 'js-patron-format.inc' %]
         <script>
         //<![CDATA[
 
@@ -558,11 +560,8 @@
 
             function select_user(borrowernumber, borrower) {
                 ownerRemove();
-                var borrowername = borrower.firstname + ' ' + borrower.surname;
                 if (borrowernumber) {
-                    var ownerlink = '<a href="/cgi-bin/koha/members/moremember.pl'
-                        + '?borrowernumber=' + borrowernumber + '">'
-                        + borrowername + '</a>';
+                    var ownerlink = $patron_to_html( borrower, { display_cardnumber: false, url: true } );
                     $('#budget_owner_name').html(ownerlink);
                     $('#budget_owner_id').val(borrowernumber);
                 }
@@ -579,7 +578,7 @@
                     var li = '<li id="user_' + borrowernumber + '">'
                         + '<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber='
                         + borrowernumber + '">' + borrowername + '</a> '
-                        + ' &bull; <a data-borrowernumber=" + borrowernumber +" class="del_user" href="#"><i class="fa fa-trash-can"></i> '+_("Remove")+'</a> '
+                        + ' &bull; <a data-borrowernumber="' + borrowernumber + '" class="del_user" href="#"><i class="fa fa-trash-can"></i> '+_("Remove")+'</a> '
                         + '</li>';
                     $("#budget_users").prepend(li);
                     ids.push(borrowernumber);
@@ -701,7 +700,7 @@
             $(document).ready(function() {
                 [% IF budgets %]
                     var oTable = KohaTable("budgeth", {
-                        "fnDrawCallback": function ( oSettings ) {
+                        "drawCallback": function ( oSettings ) {
                             if ( oSettings.aiDisplay.length == 0 )
                             {
                                 return;
@@ -731,14 +730,14 @@
                             var api = this.api(), data;
                             footer_column_sum( api, [ 4, 6, 8, 10 ], 2 );
                         },
-                        "aoColumnDefs": [
-                            { "bVisible": false, "aTargets": [ 0, 1 ] },
-                            { "bSortable": false, "aTargets": ["_all"] }
+                        "columnDefs": [
+                            { "visible": false, "targets": [ 0, 1 ] },
+                            { "orderable": false, "targets": ["_all"] }
                         ],
-                        'bSort': true,
-                        'aaSortingFixed': [[ 1, 'asc' ]],
-                        'bPaginate': false,
-                        "bAutoWidth": false
+                        "ordering": true,
+                        "orderFixed": [[ 1, 'asc' ]],
+                        "paginate": false,
+                        "autoWidth": false
                     });
 
                     $(oTable).treetable({

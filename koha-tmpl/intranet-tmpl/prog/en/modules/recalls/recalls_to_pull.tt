@@ -39,6 +39,7 @@
             <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
         [% END %]
         <main>
+            [% INCLUDE 'messages.inc' %]
 
         <h1>Recalls to pull</h1>
         The following recalls could be fulfilled by available items.
@@ -165,12 +166,12 @@
     <script>
         $(document).ready(function(){
             $("#recalls-table").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { 'bSortable': false, 'aTargets': [ 'nosort' ] },
-                    { "sType": "title-string", "aTargets" : [ "title-string" ] },
-                    { "sType": "anti-the", "aTargets": [ "anti-the" ] }
+                "columnDefs": [
+                    { "orderable": false, "targets": [ 'nosort' ] },
+                    { "type": "title-string", "targets":  [ "title-string" ] },
+                    { "type": "anti-the", "targets": [ "anti-the" ] }
                 ],
-                "sPaginationType": "full_numbers"
+                "pagingType": "full_numbers"
             }));
 
             $(".cancelreturn").click(function(){

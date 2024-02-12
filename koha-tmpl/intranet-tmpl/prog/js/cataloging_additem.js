@@ -45,9 +45,9 @@ $(document).ready(function(){
     table_settings['columns'].unshift( { cannot_be_toggled: "1" } );
 
     var itemst = KohaTable("itemst", {
-        'bPaginate': false,
-        'bInfo': false,
-        "bAutoWidth": false,
+        "paging":  false,
+        "info":  false,
+        "autoWidth":  false,
         "bKohaColumnsUseNames": true
     }, table_settings);
 
@@ -134,13 +134,6 @@ $(document).ready(function(){
         });
     }
 
-    $('#item-group-add-or-create-form-select').on('change', function() {
-        if ( ! $('input.items-enumchron').val() ) {
-            let item_group_selector = '#item-group-' + $(this).val();
-            let enumchron = $(item_group_selector).val();
-            $('input.items-enumchron').val( enumchron );
-        }
-    });
 });
 
 function CheckTemplateForm(f) {

@@ -30,6 +30,7 @@
     <div class="main container-fluid">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
+                [% INCLUDE 'messages.inc' %]
 
                     [% IF CAN_user_coursereserves_add_reserves OR CAN_user_coursereserves_manage_courses OR CAN_user_coursereserves_manage_courses OR CAN_user_coursereserves_delete_reserves %]
                     <div id="toolbar">
@@ -97,8 +98,8 @@
         var table_settings = [% TablesSettings.GetTableSettings( 'coursereserves', 'courses', 'course_reserves_table', 'json' ) | $raw %];
         $(document).ready(function() {
             var ctable = KohaTable("course_reserves_table", {
-                "sPaginationType": "full",
-                "bAutoWidth": false
+                "pagingType": "full",
+                "autoWidth": false
             }, table_settings );
         });
     </script>

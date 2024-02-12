@@ -89,12 +89,11 @@
         [% END #/ WRAPPER breadcrumbs %]
     [% END #/ WRAPPER sub-header.inc %]
 
-    [% INCLUDE 'blocking_errors.inc' %]
-
     [% IF ( op == 'show' ) %]
         <div class="main container-fluid">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
+                    [% INCLUDE 'messages.inc' %]
 
                     <div id="toolbar" class="btn-toolbar">
                         <a class="btn btn-default" id="editsuggestion" href="suggestion.pl?op=edit&amp;csrf_token=[% csrf_token | html %]&amp;suggestionid=[% suggestionid | html %]"><i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit</a>
@@ -317,10 +316,12 @@
             <div class="main container-fluid">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
+                        [% INCLUDE 'messages.inc' %]
         [% ELSE %]
             <div class="main container-fluid">
                 <div class="row">
                     <div class="col-sm-10 col-sm-push-2">
+                        [% INCLUDE 'messages.inc' %]
         [% END %]
 
         [% IF op == 'save' %]
@@ -1299,12 +1300,25 @@
         }
 
         function select_suggester(borrowernumber, borrower) {
-            var suggested = '<input type="hidden" id="suggestedby" name="suggestedby" value="' + borrowernumber + '" />';
-            suggested += '<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=' + borrowernumber + '">';
-            suggested += borrower.surname + ', ' + borrower.firstname + ' (' + borrower.cardnumber + ')';
-            suggested += '</a> ';
-            suggested += borrower.branchname + ' (' + borrower.category_description + ')';
-            $("#tdsuggestedby").html(suggested);
+            $.ajax({
+                type: 'GET',
+                url: '/api/v1/patrons/' + borrowernumber,
+                headers: {
+                    "x-koha-embed": "+strings"
+                },
+                success: function (data) {
+                    var suggested = '<input type="hidden" id="suggestedby" name="suggestedby" value="' + data.borrowernumber + '" />';
+                    suggested += '<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=' + data.borrowernumber + '">';
+                    suggested += data.surname + ', ' + data.firstname + ' (' + data.cardnumber + ')';
+                    suggested += '</a> ';
+                    suggested += data._strings.library_id.str + ' (' + data._strings.category_id.str + ')';
+                    $("#tdsuggestedby").html(suggested);
+
+                },
+                error: function (data) {
+                    alert(_("Cannot retrieve info for this patron."));
+                },
+            });
             return 0;
         }
         $(document).ready(function(){

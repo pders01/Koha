@@ -69,6 +69,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 [% IF msg_deleted %]
     <div class="dialog alert">Z39.50/SRU server deleted ([% msg_add | html %])</div>
@@ -317,10 +318,10 @@
         [% ELSE %]
             $(document).ready(function() {
                 $("#serverst").dataTable($.extend(true, {}, dataTablesDefaults, {
-                    "aoColumnDefs": [
-                        { "aTargets": [-1], "bSortable": false, "bSearchable": false },
+                    "columnDefs": [
+                        { "targets": [-1], "orderable": false, "searchable":  false },
                     ],
-                    "sPaginationType": "full"
+                    "pagingType": "full"
                 }));
                 $(".delete").on("click",function(e){
                     var servername = $(this).data("servername");

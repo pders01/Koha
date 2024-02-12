@@ -147,6 +147,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
 [% UNLESS close_form OR closed OR duplicate_form %]
   [% INCLUDE 'budgets-admin-toolbar.inc' %]
@@ -564,16 +565,16 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             $("#activeperiodst,#inactiveperiodst").dataTable($.extend(true, {}, dataTablesDefaults, {
-                "aoColumnDefs": [
-                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                "columnDefs": [
+                    { "targets": [ -1 ], "orderable": false, "searchable":  false },
                 ],
-                "sPaginationType": "full",
-                'bAutoWidth': false
+                "pagingType": "full",
+                "autoWidth": false
             } ) );
 
             [% IF close_form %]
               $("#budgeth").dataTable($.extend(true, {}, dataTablesDefaults, {
-                sDom: "t"
+                "dom": "t"
               }));
               $("#move_form").submit(function(){
                 var budget_from = "[% budget_period_description | html %]";
@@ -586,7 +587,7 @@
             [% IF closed %]
               var oTable = $("#closed_report").dataTable($.extend(true, {}, dataTablesDefaults, {
                 // The following is a c/p from aqbudgets.tt and is a candidate for refactoring.
-                "fnDrawCallback": function ( oSettings ) {
+                "drawCallback": function ( oSettings ) {
                     if ( oSettings.aiDisplay.length == 0 )
                     {
                         return;
@@ -612,14 +613,14 @@
                         }
                     }
                 },
-                "aoColumnDefs": [
-                    { "bVisible": false, "aTargets": [ 0, 1 ] },
-                    { "bSortable": false, "aTargets": ["_all"] }
+                "columnDefs": [
+                    { "visible": false, "targets": [ 0, 1 ] },
+                    { "orderable": false, "targets": ["_all"] }
                 ],
-                'bSort': true,
-                'aaSortingFixed': [[ 1, 'asc' ]],
-                "bAutoWidth": false,
-                "sPaginationType": "full_numbers"
+                "ordering": true,
+                "orderFixed": [[ 1, 'asc' ]],
+                "autoWidth": false,
+                "pagingType": "full_numbers"
               }));
             [% END %]
             $("#add_modify_budget").validate({

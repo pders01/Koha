@@ -32,6 +32,7 @@
     <div class="row">
         <div class="col-sm-10 col-sm-push-2">
             <main>
+                [% INCLUDE 'messages.inc' %]
 
         <div id="toolbar" class="btn-toolbar">
             <div class="btn-group">
@@ -156,10 +157,10 @@
 
             $('#patron-lists-table').dataTable($.extend(true, {}, dataTablesDefaults, {
                 "autoWidth": false,
-                "aoColumnDefs": [
-                    {"bSortable": false, "bSearchable": false, 'aTargets': [ 'NoSort' ]}
+                "columnDefs": [
+                    { "orderable": false, "searchable":  false, "targets": [ 'NoSort' ] }
                 ],
-                "sPaginationType": "full"
+                "pagingType": "full"
             } ));
             $(".delete_patron").on("click", function(){
                 $(".dropdown").removeClass("open");
