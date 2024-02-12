@@ -25,7 +25,7 @@ import i18n from "../i18n";
 
 const pinia = createPinia();
 
-const mainStore = useMainStore();
+const mainStore = useMainStore(pinia);
 const navigationStore = useNavigationStore(pinia);
 const routes = navigationStore.setRoutes(routesDef);
 

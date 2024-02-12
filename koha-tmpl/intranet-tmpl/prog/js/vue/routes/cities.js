@@ -1,6 +1,7 @@
 import { markRaw } from "vue";
 
-import Main from "../components/Cities/Main.vue";
+import CitiesList from "../components/Cities/CitiesList.vue";
+import CitiesFormAdd from "../components/Cities/CitiesFormAdd.vue"
 
 import { $__ } from "../i18n";
 
@@ -13,10 +14,16 @@ export const routes = [
         children: [
             {
                 path: "",
-                name: "Home",
-                component: markRaw(Main),
-                is_navigation_item: false,
+                name: "CitiesList",
+                component: markRaw(CitiesList),
             },
+            {
+                path: "add",
+                name: "CitiesFormAdd",
+                component: markRaw(CitiesFormAdd),
+                title: $__("Add city"),
+            },
+
         ],
     },
 ];
