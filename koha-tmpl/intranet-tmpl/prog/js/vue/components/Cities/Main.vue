@@ -10,7 +10,6 @@
                     <main>
                         <Dialog />
                         <router-view />
-                        <KohaTable />
                     </main>
                 </div>
                 <div class="col-sm-2 col-sm-pull-10">
@@ -26,7 +25,6 @@ import { inject, ref } from "vue"
 import Breadcrumbs from "../Breadcrumbs.vue"
 import Help from "../Help.vue"
 import Dialog from "../Dialog.vue"
-import KohaTable from "../KohaTable.vue"
 import { APIClient } from "../../fetch/api-client.js"
 import "vue-select/dist/vue-select.css"
 import { storeToRefs } from "pinia"
@@ -36,33 +34,11 @@ export default {
         const mainStore = inject("mainStore")
         const { loading, loaded, setError } = mainStore
 
-        const table = ref()
-        const cities = ref([])
-
         return {
-            cities,
             setError,
             loading,
             loaded,
         }
-    },
-    data() {
-        return {
-            tableOptions: {
-                columns: this.getTableColumns(),
-            },
-        }
-    },
-    beforeCreate() {
-        const cities_client = APIClient.cities
-        cities_client.cities.list().then(cities => {
-            this.cities = cities
-        })
-    },
-    methods: {
-        getTableColumns() {
-            return []
-        },
     },
     props: {
         admin_menu_content: {
@@ -73,7 +49,6 @@ export default {
         Breadcrumbs,
         Dialog,
         Help,
-        KohaTable,
     },
 }
 </script>
