@@ -1,0 +1,249 @@
+---
+"/uploaded_files":
+  get:
+    x-mojo-to: UploadedFiles#list
+    operationId: listUploadedFiles
+    tags:
+      - files
+    summary: List uploaded files
+    parameters:
+      - name: public
+        in: query
+        description: Filter by public status
+        required: false
+        type: boolean
+      - name: category
+        in: query
+        description: Filter by upload category code
+        required: false
+        type: string
+      - $ref: "../swagger.yaml#/parameters/match"
+      - $ref: "../swagger.yaml#/parameters/order_by"
+      - $ref: "../swagger.yaml#/parameters/page"
+      - $ref: "../swagger.yaml#/parameters/per_page"
+      - $ref: "../swagger.yaml#/parameters/q_param"
+      - $ref: "../swagger.yaml#/parameters/q_body"
+      - $ref: "../swagger.yaml#/parameters/request_id_header"
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: A list of uploaded files
+        schema:
+          type: array
+          items:
+            $ref: "../swagger.yaml#/definitions/uploaded_file"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        tools: upload_general_files
+  post:
+    x-mojo-to: UploadedFiles#upload
+    operationId: uploadFile
+    tags:
+      - files
+    summary: Upload a file
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: file
+        in: formData
+        description: The file to upload
+        required: true
+        type: file
+      - name: public
+        in: formData
+        description: Whether the file is publicly accessible
+        required: false
+        type: boolean
+        default: false
+      - name: temp
+        in: formData
+        description: Whether this is a temporary upload
+        required: false
+        type: boolean
+        default: false
+      - name: category
+        in: formData
+        description: Upload category code
+        required: false
+        type: string
+    produces:
+      - application/json
+    responses:
+      "201":
+        description: File uploaded successfully
+        schema:
+          $ref: "../swagger.yaml#/definitions/uploaded_file"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        tools: upload_general_files
+"/uploaded_files/{file_id}":
+  get:
+    x-mojo-to: UploadedFiles#get
+    operationId: getUploadedFile
+    tags:
+      - files
+    summary: Get uploaded file metadata
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/file_id_pp"
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: An uploaded file
+        schema:
+          $ref: "../swagger.yaml#/definitions/uploaded_file"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: File not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        tools: upload_general_files
+  delete:
+    x-mojo-to: UploadedFiles#delete
+    operationId: deleteUploadedFile
+    tags:
+      - files
+    summary: Delete uploaded file
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/file_id_pp"
+    produces:
+      - application/json
+    responses:
+      "204":
+        description: File deleted
+      "401":
+        description: Authentication required
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: File not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        tools: upload_general_files
+"/uploaded_files/{file_id}/download":
+  get:
+    x-mojo-to: UploadedFiles#download
+    operationId: downloadUploadedFile
+    tags:
+      - files
+    summary: Download uploaded file
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/file_id_pp"
+    produces:
+      - application/octet-stream
+    responses:
+      "200":
+        description: File content
+        schema:
+          type: file
+      "403":
+        description: Access forbidden
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: File not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+    x-koha-authorization:
+      permissions:
+        tools: upload_general_files
+"/public/uploaded_files/{file_id}/download":
+  get:
+    x-mojo-to: UploadedFiles#download_public
+    operationId: downloadPublicUploadedFile
+    tags:
+      - files
+    summary: Download public uploaded file (no authentication required)
+    parameters:
+      - $ref: "../swagger.yaml#/parameters/file_id_pp"
+    produces:
+      - application/octet-stream
+    responses:
+      "200":
+        description: File content
+        schema:
+          type: file
+      "403":
+        description: File is not public
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "404":
+        description: File not found
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "500":
+        description: Internal server error
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
+      "503":
+        description: Under maintenance
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"

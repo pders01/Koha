@@ -1,0 +1,53 @@
+---
+type: object
+properties:
+  file_id:
+    type: integer
+    description: Internal file identifier
+  hashvalue:
+    type: string
+    description: MD5 hash of the file
+  filename:
+    type: string
+    description: Original filename
+  dir:
+    type: string
+    description: Storage directory
+  filesize:
+    type:
+      - integer
+      - "null"
+    description: File size in bytes
+  created_date:
+    type:
+      - string
+      - "null"
+    format: date-time
+    description: Upload date and time
+  category:
+    type:
+      - string
+      - "null"
+    description: Upload category code
+  owner:
+    type:
+      - integer
+      - "null"
+    description: Owner borrowernumber
+  public:
+    type:
+      - integer
+      - "null"
+    description: Whether the file is publicly accessible (tinyint)
+  permanent:
+    type:
+      - integer
+      - "null"
+    description: Whether the file is permanent (tinyint)
+additionalProperties: false
+required:
+  - file_id
+  - hashvalue
+  - filename
+  - dir
+  - created_date

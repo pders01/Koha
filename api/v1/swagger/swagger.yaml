@@ -190,6 +190,8 @@ definitions:
     $ref: ./definitions/ticket_update.yaml
   transfer_limit:
     $ref: ./definitions/transfer_limit.yaml
+  uploaded_file:
+    $ref: ./definitions/uploaded_file.yaml
   vendor:
     $ref: ./definitions/vendor.yaml
   vendor_alias:
@@ -601,6 +603,14 @@ paths:
     $ref: ./paths/transfer_limits.yaml#/~1transfer_limits~1batch
   "/transfer_limits/{limit_id}":
     $ref: "./paths/transfer_limits.yaml#/~1transfer_limits~1{limit_id}"
+  /uploaded_files:
+    $ref: ./paths/uploaded_files.yaml#/~1uploaded_files
+  "/uploaded_files/{file_id}":
+    $ref: "./paths/uploaded_files.yaml#/~1uploaded_files~1{file_id}"
+  "/uploaded_files/{file_id}/download":
+    $ref: "./paths/uploaded_files.yaml#/~1uploaded_files~1{file_id}~1download"
+  "/public/uploaded_files/{file_id}/download":
+    $ref: "./paths/uploaded_files.yaml#/~1public~1uploaded_files~1{file_id}~1download"
 parameters:
   advancededitormacro_id_pp:
     description: Advanced editor macro internal identifier
@@ -767,6 +777,12 @@ parameters:
     name: data_type
     required: true
     type: string
+  file_id_pp:
+    description: File internal identifier
+    in: path
+    name: file_id
+    required: true
+    type: integer
   fund_id_pp:
     description: Fund id
     in: path

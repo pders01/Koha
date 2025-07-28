@@ -142,6 +142,21 @@ sub httpheaders {
     }
 }
 
+=head3 to_api_mapping
+
+This method returns the mapping for representing a Koha::UploadedFile object
+on the API.
+
+=cut
+
+sub to_api_mapping {
+    return {
+        id                 => 'file_id',
+        uploadcategorycode => 'category',
+        dtcreated          => 'created_date',
+    };
+}
+
 =head2 CLASS METHODS
 
 =head3 permanent_directory
