@@ -20,11 +20,6 @@
     <style>
         #fileuploadstatus,
         #fileuploadfailed,
-        #jobpanel,
-        #jobstatus,
-        #jobfailed,
-        #fileuploadform,
-        #upload_file_type,
         #upload_options,
         #process_images {
             display: none;
@@ -43,7 +38,6 @@
             position: relative;
             padding: 50px 20px;
             margin: 1em;
-
             cursor: default;
         }
 
@@ -58,7 +52,7 @@
             background-color: #fff;
         }
 
-        #messages_2 {
+        #messages {
             font-weight: normal;
         }
         .cover_preview {
@@ -75,6 +69,22 @@
         .fa-file-zipper {
             color: #777;
             font-size: 300%;
+        }
+        .upload-result {
+            margin: 1em 0;
+            padding: 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .upload-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .upload-error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
         }
     </style>
 [% END %]
@@ -177,6 +187,10 @@
             <hr />
         </div>
         <!-- /#upload_results -->
+    [% ELSE %]
+        <div id="upload_results" style="display: none;">
+            <!-- Upload results will be displayed here -->
+        </div>
     [% END # /IF uploadimage %]
 
     <ul>
@@ -194,17 +208,16 @@
             [% SET column_class = "col-sm-12" %]
         [% END %]
         <div class="[% column_class | html %]">
-            <form method="get" action="/cgi-bin/koha/tools/upload-cover-image.pl" id="uploadfile" enctype="multipart/form-data">
+            <form id="uploadfile" enctype="multipart/form-data">
                 <fieldset class="rows">
                     <div id="fileuploadform">
                         <label for="fileToUpload">Select the file to upload: </label>
-                        <input type="file" id="fileToUpload" name="fileToUpload" />
+                        <input type="file" id="fileToUpload" name="fileToUpload" [% UNLESS itemnumber || biblionumber %]accept="image/*,application/zip"[% ELSE %]accept="image/*"[% END %] />
                     </div>
 
                     <div id="filedrag">
-                        <a id="click_to_select" href="#">Drop files here or click to select a file</a>
-                        [%# FIXME Remove the following div and use #message instead %]
-                        <div id="messages_2"></div>
+                        <a id="click_to_select" href="#">[% UNLESS itemnumber || biblionumber %]Drop files here or click to select a file[% ELSE %]Drop image files here or click to select a file[% END %]</a>
+                        <div id="messages"></div>
                     </div>
 
                     <div id="uploadpanel">
@@ -217,7 +230,6 @@
                     </div>
                 </fieldset>
             </form>
-            <!-- /#uploadfile -->
 
             <form method="post" id="processfile" action="/cgi-bin/koha/tools/upload-cover-image.pl" enctype="multipart/form-data">
                 [% INCLUDE 'csrf-token.inc' %]
@@ -252,14 +264,14 @@
                                 <label for="image">Image file</label>
                             </li>
                             <li id="biblionumber_entry">
-                                <label for="biblionumber">Bibliographic record number: </label>
-                                <input type="text" id="biblionumber" name="biblionumber" value="[% biblionumber | html %]" size="15" />
+                                <label for="biblionumber_input">Bibliographic record number: </label>
+                                <input type="text" id="biblionumber_input" name="biblionumber" value="[% biblionumber | html %]" size="15" />
                             </li>
                         [% END %]
                         <li class="radio">
                             <label for="replace">
                                 [% IF AllowMultipleCovers == 0 %]
-                                    <input type="checkbox" id="replace" name="replace" value="" disabled="disabled" checked="checked" />
+                                    <input type="checkbox" id="replace" name="replace" value="1" disabled="disabled" checked="checked" />
                                     Existing covers will be replaced
                                 [% ELSE %]
                                     <input type="checkbox" id="replace" name="replace" value="1" />
@@ -279,9 +291,7 @@
                     [% END %]
                 </fieldset>
             </form>
-            <!-- /#processfile -->
         </div>
-        <!-- /.col-sm-9/.col-sm-12 -->
 
         [% IF ( cover_images.size ) %]
             <div class="col-sm-3">
@@ -302,18 +312,18 @@
                         [% END # /IF img %]
                     [% END # /FOREACH img %]
                 </ul>
-                <!-- /ul.thumbnails -->
             </div>
-            <!-- /.col-sm-3 -->
         [% END # /IF images.size %]
     </div>
-    <!-- /.row -->
 [% END %]
+
 [% MACRO jsinclude BLOCK %]
     <script>
         var interface = "[% interface | html %]";
         var theme = "[% theme | html %]";
         var biblionumber = "[% biblionumber | html %]";
+        var itemnumber = "[% itemnumber | html %]";
+        var allowMultipleCovers = [% IF AllowMultipleCovers %]true[% ELSE %]false[% END %];
     </script>
     [% Asset.js("js/upload-images.js") | $raw %]
 [% END %]

@@ -1,277 +1,363 @@
-/* global __ interface theme biblionumber */
+/* global __ interface theme biblionumber itemnumber allowMultipleCovers uploadedFileId selectedFile APIClient */
 
-$(document).ready(function () {
-    $("html").on("drop", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    });
+// Global variables for upload management
+let uploadedFileId = null;
+let selectedFile = null;
 
-    $("#zipfile").on("click", function () {
-        $("biblionumber_entry").hide();
-    });
-
-    $("#image").on("click", function () {
-        $("#biblionumber_entry").show();
-    });
-
-    $("#uploadfile").validate({
-        submitHandler: function () {
-            StartUpload();
-            return false;
-        },
-    });
-
-    $("#filedrag")
-        .on("click", ".cancel_image", function () {
-            $("#click_to_select").show();
-            $("#messages_2").html("");
-            $("#fileToUpload").prop("disabled", false);
-            $("#process_images, #fileuploadstatus").hide();
-            return false;
-        })
-        .on("click", ".save_image", function (e) {
-            e.preventDefault();
-            $("#processfile").submit();
-        });
-
-    $("html").on("drop", function (e) {
-        /* Prevent the default browser action when image is dropped */
-        /* i.e. don't navigate to a view of the local image */
-        e.preventDefault();
-        e.stopPropagation();
-    });
-
-    $("#filedrag").on("dragenter dragover dragleave", function (e) {
-        /* Handle various drag and drop events in "Drop files" area */
-        /* If event type is "dragover," add the "hover" class */
-        /* otherwise set no class name */
-        e.stopPropagation();
-        e.preventDefault();
-        e.target.className = e.type == "dragover" ? "hover" : "";
-    });
-
-    $("#filedrag").on("click", function () {
-        /* Capture a click inside the drag and drop area */
-        /* Trigger the <input type="file"> action */
-        $("#fileToUpload").click();
-    });
-
-    // Drop
-    $("#filedrag").on("drop", function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        prepUpLoad(e);
-    });
-
-    // file selected
-    $("#fileToUpload").on("change", function () {
-        prepUpLoad();
-    });
-
-    $(".thumbnails .remove").on("click", function (e) {
-        e.preventDefault();
-        var result = confirm(
-            __("Are you sure you want to delete this cover image?")
-        );
-        var imagenumber = $(this).data("coverimg");
-        if (result == true) {
-            removeLocalImage(imagenumber);
-        }
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    initializeUploadInterface();
 });
 
-function prepUpLoad(event) {
-    $("#click_to_select,#upload_results").hide();
-    $("#messages_2").html("");
-    var file;
-    if (event) {
-        file = event.originalEvent.dataTransfer.files[0];
-    } else {
-        file = $("#fileToUpload")[0].files[0];
+function initializeUploadInterface() {
+    // Prevent default browser behavior for file drops
+    document.addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    // Handle zip/image file type selection
+    const zipfileRadio = document.getElementById("zipfile");
+    const imageRadio = document.getElementById("image");
+    const biblionumberEntry = document.getElementById("biblionumber_entry");
+
+    if (zipfileRadio) {
+        zipfileRadio.addEventListener("click", function () {
+            if (biblionumberEntry) biblionumberEntry.style.display = "none";
+        });
     }
 
-    $("#fileuploadstatus, #upload_options").show();
-    var fd = new FormData();
-    fd.append("file", file);
-    if (ParseFile(file)) {
-        StartUpload(fd);
+    if (imageRadio) {
+        imageRadio.addEventListener("click", function () {
+            if (biblionumberEntry) biblionumberEntry.style.display = "block";
+        });
+    }
+
+    // Handle drag and drop events
+    const fileDrag = document.getElementById("filedrag");
+    if (fileDrag) {
+        fileDrag.addEventListener("dragenter", handleDragEvent);
+        fileDrag.addEventListener("dragover", handleDragEvent);
+        fileDrag.addEventListener("dragleave", handleDragEvent);
+        fileDrag.addEventListener("drop", handleFileDrop);
+        fileDrag.addEventListener("click", function () {
+            document.getElementById("fileToUpload").click();
+        });
+    }
+
+    // Handle file input change
+    const fileInput = document.getElementById("fileToUpload");
+    if (fileInput) {
+        fileInput.addEventListener("change", function () {
+            if (this.files.length > 0) {
+                handleFileSelection(this.files[0]);
+            }
+        });
+    }
+
+    // Handle cancel/save image buttons
+    const filedragElement = document.getElementById("filedrag");
+    if (filedragElement) {
+        filedragElement.addEventListener("click", function (e) {
+            if (e.target.classList.contains("cancel_image")) {
+                e.preventDefault();
+                document.getElementById("click_to_select").style.display =
+                    "block";
+                document.getElementById("messages").innerHTML = "";
+                document.getElementById("fileToUpload").disabled = false;
+                document.getElementById("process_images").style.display =
+                    "none";
+                document.getElementById("fileuploadstatus").style.display =
+                    "none";
+                return false;
+            }
+            if (e.target.classList.contains("save_image")) {
+                e.preventDefault();
+                document.getElementById("processfile").submit();
+            }
+        });
+    }
+
+    // Handle existing image deletion
+    const removeButtons = document.querySelectorAll(".thumbnails .remove");
+    removeButtons.forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (
+                confirm(__("Are you sure you want to delete this cover image?"))
+            ) {
+                const imagenumber = this.dataset.coverimg;
+                removeLocalImage(imagenumber);
+            }
+        });
+    });
+
+    // Initialize biblionumber field behavior
+    if (!biblionumber && !itemnumber) {
+        const biblioInput = document.getElementById("biblionumber_input");
+        if (biblioInput) {
+            biblioInput.addEventListener("input", function () {
+                biblionumber = this.value;
+            });
+        }
     }
 }
 
-function StartUpload(fd) {
-    $("#uploadform button.submit").prop("disabled", true);
-    $("#uploadedfileid").val("");
-    AjaxUpload(fd, $("#fileuploadprogress"), "temp=1", cbUpload);
+function handleDragEvent(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.target.className = e.type === "dragover" ? "hover" : "";
 }
 
-function cbUpload(status, fileid, errors) {
-    if (status == "done") {
-        $("#uploadedfileid").val(fileid);
-        $("#fileToUpload").prop("disabled", true);
-        $("#process_images").show();
+function handleFileDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileSelection(files[0]);
+    }
+}
+
+function handleFileSelection(file) {
+    selectedFile = file;
+    document.getElementById("click_to_select").style.display = "none";
+    document.getElementById("messages").innerHTML = "";
+    document.getElementById("upload_results").style.display = "none";
+
+    if (!validateFile(file)) {
+        resetForm();
+        return;
+    }
+
+    displayFileInfo(file);
+    uploadFileToAPI();
+}
+
+function validateFile(file) {
+    if (file.type.indexOf("image") === 0) {
+        if (!file.type.match(/^image\/(gif|jpeg|jpg|png|xpm)$/i)) {
+            showError(
+                __(
+                    "Error: This tool only accepts GIF, JPEG, PNG, or XPM images."
+                )
+            );
+            return false;
+        }
+        // Set form to image mode
+        const imageRadio = document.getElementById("image");
+        const zipRadio = document.getElementById("zipfile");
+        const biblionumberEntry = document.getElementById("biblionumber_entry");
+
+        if (imageRadio) {
+            imageRadio.checked = true;
+            if (biblionumberEntry) {
+                biblionumberEntry.style.display = "block";
+                const inputs =
+                    biblionumberEntry.querySelectorAll("input, label");
+                inputs.forEach(el => {
+                    el.classList.add("required");
+                    if (el.tagName === "INPUT") el.required = true;
+                });
+            }
+        }
+        if (zipRadio) zipRadio.checked = false;
+    } else if (file.type.indexOf("zip") > 0 || file.name.endsWith(".zip")) {
+        // Set form to zip mode
+        const imageRadio = document.getElementById("image");
+        const zipRadio = document.getElementById("zipfile");
+        const biblionumberEntry = document.getElementById("biblionumber_entry");
+
+        if (zipRadio) zipRadio.checked = true;
+        if (imageRadio) imageRadio.checked = false;
+        if (biblionumberEntry) biblionumberEntry.style.display = "none";
     } else {
-        var errMsgs = [
-            __("Error code 0 not used"),
-            __("File already exists"),
-            __("Directory is not writeable"),
-            __("Root directory for uploads not defined"),
-            __("Temporary directory for uploads not defined"),
-        ];
-        var errCode = errors[$("#fileToUpload").prop("files")[0].name].code;
-        $("#fileuploadstatus").hide();
-        $("#fileuploadfailed").show();
-        $("#fileuploadfailed").text(
-            __("Upload status: ") +
-                (status == "failed"
-                    ? __("Failed") + " - (" + errCode + ") " + errMsgs[errCode]
-                    : status == "denied"
-                      ? __("Denied")
-                      : status)
+        showError(
+            __(
+                "Error: This tool only accepts ZIP files or GIF, JPEG, PNG, or XPM images."
+            )
         );
-        $("#processfile").hide();
+        return false;
+    }
+    return true;
+}
+
+function displayFileInfo(file) {
+    let displayContent = "";
+
+    if (file.type.indexOf("image") === 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById("messages").innerHTML =
+                '<p><img class="cover_preview" src="' +
+                e.target.result +
+                '" /></p>' +
+                getFileInfoHTML(file);
+        };
+        reader.readAsDataURL(file);
+    } else if (file.type.indexOf("zip") > 0 || file.name.endsWith(".zip")) {
+        document.getElementById("messages").innerHTML =
+            '<p><i class="fa-solid fa-file-zipper" aria-hidden="true"></i></p>' +
+            getFileInfoHTML(file);
     }
 }
 
-function AjaxUpload(formData, progressbar, xtra, callback) {
-    var xhr = new XMLHttpRequest();
-    var url = "/cgi-bin/koha/tools/upload-file.pl?" + xtra;
-    progressbar.val(0);
-    progressbar.next(".fileuploadpercent").text("0");
-    xhr.open("POST", url, true);
+function getFileInfoHTML(file) {
+    return (
+        "<p><strong>" +
+        __("File name:") +
+        "</strong> " +
+        file.name +
+        "<br />" +
+        "<strong>" +
+        __("File type:") +
+        "</strong> " +
+        file.type +
+        "<br />" +
+        "<strong>" +
+        __("File size:") +
+        "</strong> " +
+        convertSize(file.size) +
+        "</p>"
+    );
+}
+
+function uploadFileToAPI() {
+    document.getElementById("fileuploadstatus").style.display = "block";
+    document.getElementById("upload_options").style.display = "block";
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("category", "cover_images");
+    formData.append("public", "0");
+    formData.append("temp", "1"); // Temporary upload until processed
+
+    // Custom upload with progress tracking
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener("progress", function (e) {
+        if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            document.getElementById("fileuploadprogress").value =
+                percentComplete;
+            document.querySelector(".fileuploadpercent").textContent =
+                percentComplete;
+        }
+    });
+
+    xhr.onload = function () {
+        if (xhr.status === 201) {
+            const data = JSON.parse(xhr.responseText);
+            uploadedFileId = data.file_id;
+            document.getElementById("uploadedfileid").value = uploadedFileId;
+            document.getElementById("fileuploadprogress").value = 100;
+            document.querySelector(".fileuploadpercent").textContent = "100";
+            document.getElementById("fileToUpload").disabled = true;
+            document.getElementById("process_images").style.display = "block";
+        } else {
+            const error = JSON.parse(xhr.responseText);
+            handleUploadError(xhr.status, error);
+            resetForm();
+        }
+    };
+
+    xhr.onerror = function () {
+        showError(__("Upload failed: Network error"));
+        resetForm();
+    };
+
+    xhr.open("POST", "/api/v1/uploaded_files");
     xhr.setRequestHeader(
         "CSRF-TOKEN",
-        $('meta[name="csrf-token"]').attr("content")
+        document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content")
     );
-    xhr.upload.onprogress = function (e) {
-        var p = Math.round((e.loaded / e.total) * 100);
-        progressbar.val(p);
-        progressbar.next(".fileuploadpercent").text(p);
-    };
-    xhr.onload = function () {
-        var data = JSON.parse(xhr.responseText);
-        if (data.status == "done") {
-            progressbar.val(100);
-            progressbar.next(".fileuploadpercent").text("100");
-        }
-        callback(data.status, data.fileid, data.errors);
-    };
-    xhr.onerror = function () {
-        // Probably only fires for network failure
-        alert(__("An error occurred while uploading."));
-    };
     xhr.send(formData);
-    return xhr;
 }
 
-// output file information
-function ParseFile(file) {
-    var valid = true;
-    if (file.type.indexOf("image") == 0) {
-        /* If the uploaded file is an image, show it */
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            Output(
-                '<p><img class="cover_preview" src="' +
-                    e.target.result +
-                    '" /></p>'
-            );
-        };
-        $("#biblionumber_entry")
-            .show()
-            .find("input,label")
-            .addClass("required")
-            .prop("required", true);
-        $("#image").prop("checked", true).change();
-        $("#zipfile").prop("checked", false);
-        reader.readAsDataURL(file);
-    } else if (file.type.indexOf("zip") > 0) {
-        Output(
-            '<p><i class="fa-solid fa-file-zipper" aria-hidden="true"></i></p>'
-        );
-        $("#biblionumber_entry").hide();
-        $("#image").prop("checked", false);
-        $("#zipfile").prop("checked", true);
-    } else {
-        Output(
-            '<div class="alert alert-warning"><strong>' +
-                __("Error:") +
-                " </strong> " +
-                __(
-                    "This tool only accepts ZIP files or GIF, JPEG, PNG, or XPM images."
-                ) +
-                "</div>"
-        );
-        valid = false;
-        resetForm();
+function handleUploadError(status, error) {
+    const errorMessages = [
+        __("Error code 0 not used"),
+        __("File already exists"),
+        __("Directory is not writeable"),
+        __("Root directory for uploads not defined"),
+        __("Temporary directory for uploads not defined"),
+    ];
+
+    let errorMsg = __("Upload status: Failed");
+    if (error.error_code === "duplicate_file") {
+        errorMsg += " - " + __("File already exists");
+    } else if (error.error) {
+        errorMsg += " - " + error.error;
     }
 
-    Output(
-        "<p>" +
-            __("File name:") +
-            " <strong>" +
-            file.name +
-            "</strong><br />" +
-            __("File type:") +
-            " <strong>" +
-            file.type +
-            "</strong><br />" +
-            __("File size:") +
-            " <strong>" +
-            convertSize(file.size) +
-            "</strong>"
-    );
-    return valid;
+    document.getElementById("fileuploadstatus").style.display = "none";
+    document.getElementById("fileuploadfailed").style.display = "block";
+    document.getElementById("fileuploadfailed").textContent = errorMsg;
+    document.getElementById("processfile").style.display = "none";
 }
 
-// output information
-function Output(msg) {
-    var m = document.getElementById("messages_2");
-    m.innerHTML = msg + m.innerHTML;
+function showError(message) {
+    const results = document.getElementById("upload_results");
+    results.innerHTML =
+        '<div class="upload-result upload-error">' + message + "</div>";
+    results.style.display = "block";
 }
 
-// Bytes conversion
+function showSuccess(message) {
+    const results = document.getElementById("upload_results");
+    results.innerHTML =
+        '<div class="upload-result upload-success">' + message + "</div>";
+    results.style.display = "block";
+}
+
+function resetForm() {
+    document.getElementById("uploadpanel").style.display = "none";
+    document.getElementById("upload_options").style.display = "none";
+    document.getElementById("process_images").style.display = "none";
+    document.getElementById("click_to_select").style.display = "block";
+    document.getElementById("messages").innerHTML = "";
+    document.getElementById("fileToUpload").disabled = false;
+    document.getElementById("fileToUpload").value = "";
+    document.getElementById("fileuploadprogress").value = 0;
+    document.querySelector(".fileuploadpercent").textContent = "0";
+    selectedFile = null;
+    uploadedFileId = null;
+}
+
 function convertSize(size) {
-    var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    if (size == 0) return "0 Byte";
-    var i = parseInt(Math.floor(Math.log(size) / Math.log(1024)));
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (size === 0) return "0 Byte";
+    const i = parseInt(Math.floor(Math.log(size) / Math.log(1024)));
     return Math.round(size / Math.pow(1024, i), 2) + " " + sizes[i];
 }
 
 function removeLocalImage(imagenumber) {
-    var thumbnail = $("#imagenumber-" + imagenumber);
-    var copy = thumbnail.html();
-    thumbnail.find("img").css("opacity", ".2");
-    thumbnail
-        .find("a.remove")
-        .html(
-            "<img style='display:inline-block' src='" +
-                interface +
-                "/" +
-                theme +
-                "/img/spinner-small.gif' alt='' />"
-        );
+    const thumbnail = document.getElementById("imagenumber-" + imagenumber);
+    const copy = thumbnail.innerHTML;
+    thumbnail.querySelector("img").style.opacity = ".2";
+    thumbnail.querySelector("a.remove").innerHTML =
+        "<img style='display:inline-block' src='" +
+        interface +
+        "/" +
+        theme +
+        "/img/spinner-small.gif' alt='' />";
 
     const client = APIClient.cover_image;
     client.cover_images.delete(imagenumber).then(
         success => {
-            if (success.deleted == 1) {
+            if (success.deleted === 1) {
                 location.href =
                     "/cgi-bin/koha/tools/upload-cover-image.pl?biblionumber=" +
                     biblionumber;
             } else {
-                thumbnail.html(copy);
+                thumbnail.innerHTML = copy;
                 alert(__("An error occurred on deleting this image"));
             }
         },
         error => {
-            thumbnail.html(copy);
+            thumbnail.innerHTML = copy;
             alert(__("An error occurred on deleting this image"));
-            console.warn("Something wrong happened: %s".format(error));
+            console.warn("Something wrong happened: " + error);
         }
     );
-}
-
-function resetForm() {
-    $("#uploadpanel,#upload_options,#process_images").hide();
-    $("#click_to_select").show();
 }

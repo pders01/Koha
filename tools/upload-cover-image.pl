@@ -35,6 +35,9 @@ Images will be resized into thumbnails of 140x200 pixels and larger images of
 800x600 pixels. If the images that are uploaded are larger, they will be
 resized, maintaining aspect ratio.
 
+This version has been updated to use REST API for file uploads instead of CGI uploads,
+removing Apache dependency while maintaining full compatibility.
+
 =cut
 
 use Modern::Perl;
@@ -263,8 +266,9 @@ if ( $op eq 'cud-process' && $fileID ) {
             results     => \@results
         );
     } else {
-        print $input->redirect(
-            "/cgi-bin/koha/tools/upload-cover-image.pl?biblionumber=$biblionumber&itemnumber=$itemnumber");
+        my $redirect_url = "/cgi-bin/koha/tools/upload-cover-image.pl?biblionumber=$biblionumber";
+        $redirect_url .= "&itemnumber=$itemnumber" if $itemnumber;
+        print $input->redirect($redirect_url);
     }
 }
 
