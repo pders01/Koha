@@ -3,6 +3,7 @@
 /Makefile
 /pm_to_blib
 node_modules/
+.yarn/
 
 api/v1/swagger/swagger_bundle.json
 
