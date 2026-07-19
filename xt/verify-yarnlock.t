@@ -17,30 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with Koha; if not, see <https://www.gnu.org/licenses>.
 
-# This file tests that Koha's yarn.lock file is updated with the
-# packages.json file. If this test fails, the likely solution is to run
-# 'yarn install' to generate an updated yarn.lock file, then
-# 'git commit ./yarn.lock'.
+# Verify that yarn.lock is consistent with package.json and the Yarn
+# configuration. If this test fails, run 'yarn install' and commit the
+# resulting yarn.lock changes.
 
 use Modern::Perl;
+use Cwd           qw(getcwd);
+use File::Compare qw(compare);
+use File::Copy    qw(copy);
+use File::Temp    qw(tempdir);
 use Test::More tests => 2;
 use Test::NoWarnings;
 
-my $rc;
-
-# if KTD dirs exists?
-if ( -d "/usr/local/share/.cache/yarn" and -d "/kohadevbox/node_modules" ) {
-
-    # we use KTD's existing .cache/yarn and node_modules dirs
-    $rc = system("yarn check  --modules-folder /kohadevbox/node_modules  --cache-dir /usr/local/share/.cache/yarn");
-
-} else {
-
-    # else, we just use yarn's currently set dirs
-    $rc = system("yarn check");
-
+# Yarn 4 removed the read-only 'yarn check' command. An immutable install
+# performs the link step and cannot safely reuse KTD's root-owned node_modules.
+# Generate a candidate lockfile in an isolated project instead. The
+# update-lockfile mode skips linking and does not create node_modules.
+my $tempdir = tempdir( CLEANUP => 1 );
+my @files   = qw(package.json yarn.lock);
+push @files, ".yarnrc.yml" if -e ".yarnrc.yml";
+for my $file (@files) {
+    copy( $file, "$tempdir/$file" ) or BAIL_OUT("Cannot copy $file to $tempdir");
 }
 
-# yarn returns a 256 value for this specific lockfile error,
-#  but we assume any non-zero value is bad
-is( $rc, 0, "verify yarn.lock file is updated correctly" );
+my $current_dir = getcwd();
+chdir $tempdir or BAIL_OUT("Cannot change directory to $tempdir");
+my $rc = system( "yarn", "install", "--mode=update-lockfile" );
+chdir $current_dir or BAIL_OUT("Cannot change directory to $current_dir");
+
+# Fail if Yarn cannot resolve the project or if it changes the lockfile.
+my $lockfile_is_current = $rc == 0 && compare( "yarn.lock", "$tempdir/yarn.lock" ) == 0;
+ok( $lockfile_is_current, "verify yarn.lock file is updated correctly" );
